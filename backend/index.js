@@ -1,88 +1,162 @@
 // ===============================
-// GlobeTrotter Backend
+// GlobeTrotter Backend (Supabase)
 // ===============================
 
 const express = require("express");
-const app = express();
+require("dotenv").config();
+const supabase = require("./supabase");
+console.log("🔥🔥 THIS INDEX.JS FILE IS RUNNING 🔥🔥");
 
+const app = express();
 app.use(express.json());
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// Temporary data
-let trips = [];
-let activities = [];
-
-// Home route
+// -------------------------------
+// HOME
+// -------------------------------
 app.get("/", (req, res) => {
-  res.send("GlobeTrotter Backend is running 🚀");
+  res.send("GlobeTrotter Backend with Supabase 🚀");
 });
 
-// Create trip
-app.post("/api/trips", (req, res) => {
-  const { name, start_date, end_date, description } = req.body;
+// -------------------------------
+// DB TEST (IMPORTANT)
+// -------------------------------
+app.get("/api/db-test", async (req, res) => {
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*")
+    .limit(1);
 
-  if (!name || !start_date || !end_date) {
-    return res.status(400).json({ message: "Missing fields" });
+  if (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 
-  const trip = {
-    id: trips.length + 1,
-    name,
-    start_date,
-    end_date,
-    description
-  };
-
-  trips.push(trip);
-  res.json({ success: true, trip });
-});
-
-// Get all trips
-app.get("/api/trips", (req, res) => {
-  res.json({ success: true, trips });
-});
-
-// Add city
-app.post("/api/trips/:id/stops", (req, res) => {
-  const { city, start_date, end_date } = req.body;
-
-  if (!city || !start_date || !end_date) {
-    return res.status(400).json({ message: "Missing city details" });
-  }
-
-  res.json({ success: true, stop: { city, start_date, end_date } });
-});
-
-// Add activity
-app.post("/api/activities", (req, res) => {
-  const { name, cost, category } = req.body;
-
-  if (!name || !cost) {
-    return res.status(400).json({ message: "Missing activity data" });
-  }
-
-  const activity = { name, cost, category };
-  activities.push(activity);
-
-  res.json({ success: true, activity });
-});
-
-// Budget API
-app.get("/api/trips/:id/budget", (req, res) => {
   res.json({
     success: true,
-    total_cost: 15000,
-    per_day: 2500,
-    breakdown: {
-      stay: 7000,
-      activities: 5000,
-      food: 3000
-    }
+    message: "Supabase connected successfully 🎉",
+    data
   });
 });
 
-// Start server
+// -------------------------------
+// CREATE TRIP
+// -------------------------------
+app.post("/api/trips", async (req, res) => {
+  const { name, start_date, end_date, description, user_id } = req.body;
+
+  if (!name || !start_date || !end_date || !user_id) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
+
+  const { data, error } = await supabase
+    .from("trips")
+    .insert([
+      { name, start_date, end_date, description, user_id }
+    ])
+    .select();
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json({ success: true, trip: data[0] });
+});
+
+// -------------------------------
+// GET ALL TRIPS
+// -------------------------------
+app.get("/api/trips", async (req, res) => {
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*");
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json({ success: true, trips: data });
+});
+// -------------------------------
+// ADD STOP (CITY) TO A TRIP
+// -------------------------------
+app.post("/api/trips/:tripId/stops", async (req, res) => {
+  const { tripId } = req.params;
+  const { city_name, country, start_date, end_date, order_index } = req.body;
+
+  if (!city_name || !country || !start_date || !end_date || order_index === undefined) {
+    return res.status(400).json({ message: "Missing stop fields" });
+  }
+
+  const { data, error } = await supabase
+    .from("stops")
+    .insert([
+      {
+        trip_id: tripId,
+        city_name,
+        country,
+        start_date,
+        end_date,
+        order_index
+      }
+    ])
+    .select();
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json({
+    success: true,
+    stop: data[0]
+  });
+});
+// -------------------------------
+// ADD ACTIVITY
+// -------------------------------
+app.post("/api/stops/:stopId/activities", async (req, res) => {
+  const { stopId } = req.params;
+  const { name, category, cost, duration, description } = req.body;
+
+  if (!name || !stopId) {
+    return res.status(400).json({
+      message: "Missing activity name or stopId"
+    });
+  }
+
+  const { data, error } = await supabase
+    .from("activities")
+    .insert([
+      {
+        stop_id: stopId,
+        name,
+        category,
+        cost,
+        duration,
+        description
+      }
+    ])
+    .select();
+
+  if (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+
+  res.json({
+    success: true,
+    activity: data[0]
+  });
+});
+
+// -------------------------------
+// START SERVER (MUST BE LAST)
+// -------------------------------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
