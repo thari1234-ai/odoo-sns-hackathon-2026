@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Font & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --accent:#00bcd4;
+  --bg:#f4f7fb;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  margin-top:70px;
+}
+
+/* NAVBAR */
+.navbar{background:white;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+.navbar-brand{color:var(--primary)!important;font-weight:700;}
+.nav-link{color:#333;font-weight:500;}
+.nav-link:hover{color:var(--primary);}
+
+/* HEADER */
+.page-header{
+  background:linear-gradient(120deg,var(--primary),var(--accent));
+  color:white;
+  border-radius:25px;
+  padding:30px;
+  margin-bottom:20px;
+  text-align:center;
+}
+
+/* CARD STATS */
+.stats-card{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  text-align:center;
+  margin-bottom:20px;
+}
+.stats-card h4{font-weight:700;}
+.stats-card p{color:#666;}
+
+/* CHART CONTAINER */
+.chart-container{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  margin-bottom:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container">
+  <a class="navbar-brand" href="#">GlobeTrotter Admin</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="#">Users</a></li>
+    <li class="nav-item"><a class="nav-link" href="#">Trips</a></li>
+  </ul>
+</div>
+</nav>
+
+<div class="container mt-4">
+
+<div class="page-header">
+  <h2 class="fw-bold">Admin Dashboard 📊</h2>
+  <p class="mb-0">Monitor platform usage and trip data</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="row">
+  <div class="col-md-3">
+    <div class="stats-card">
+      <h4>1,250</h4>
+      <p>Total Users</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card">
+      <h4>320</h4>
+      <p>Trips Created</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card">
+      <h4>45</h4>
+      <p>Popular Cities</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card">
+      <h4>75%</h4>
+      <p>Active Users</p>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="chart-container">
+      <h5>Trips per Month</h5>
+      <canvas id="tripsChart" height="250"></canvas>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="chart-container">
+      <h5>Top 5 Cities</h5>
+      <canvas id="citiesChart" height="250"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE OF LATEST TRIPS -->
+<div class="chart-container">
+  <h5>Latest Trips</h5>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Trip Name</th>
+          <th>User</th>
+          <th>City Count</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Summer in Paris</td>
+          <td>Rithika</td>
+          <td>3</td>
+          <td>2026-06-10</td>
+          <td>2026-06-15</td>
+        </tr>
+        <tr>
+          <td>Rome Adventure</td>
+          <td>Arjun</td>
+          <td>2</td>
+          <td>2026-05-20</td>
+          <td>2026-05-25</td>
+        </tr>
+        <tr>
+          <td>Barcelona Trip</td>
+          <td>Simran</td>
+          <td>4</td>
+          <td>2026-07-05</td>
+          <td>2026-07-12</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script>
+// Trips per month chart
+const tripsCtx = document.getElementById('tripsChart').getContext('2d');
+new Chart(tripsCtx,{
+  type:'bar',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun'],
+    datasets:[{
+      label:'Trips Created',
+      data:[20,35,50,65,80,95],
+      backgroundColor:'#1e88e5'
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{legend:{display:false}},
+    scales:{y:{beginAtZero:true}}
+  }
+});
+
+// Top 5 cities pie chart
+const citiesCtx = document.getElementById('citiesChart').getContext('2d');
+new Chart(citiesCtx,{
+  type:'pie',
+  data:{
+    labels:['Paris','Rome','Barcelona','London','Tokyo'],
+    datasets:[{
+      data:[40,30,20,15,10],
+      backgroundColor:['#1e88e5','#00bcd4','#ff9800','#8bc34a','#e91e63']
+    }]
+  },
+  options:{responsive:true, plugins:{legend:{position:'bottom'}}}
+});
+</script>
+
+</body>
+</html>

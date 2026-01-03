@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --accent:#00bcd4;
+  --bg:#f4f7fb;
+  --dark:#0d1b2a;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  margin-top:70px;
+}
+
+/* NAVBAR */
+.navbar{
+  background:white;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.navbar-brand{color:var(--primary)!important;font-weight:700;}
+.nav-link{color:#333;font-weight:500;}
+.nav-link:hover{color:var(--primary);}
+
+/* HERO */
+.hero{
+  background:url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") center/cover no-repeat;
+  border-radius:25px;
+  padding:60px;
+  color:white;
+  position:relative;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  border-radius:25px;
+}
+.hero-content{
+  position:relative;
+  z-index:1;
+}
+
+/* SEARCH */
+.search-box{
+  background:white;
+  border-radius:30px;
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.search-box input{
+  border:none;
+  outline:none;
+  width:100%;
+}
+
+/* BUTTON */
+.btn-main{
+  background:var(--primary);
+  color:white;
+  border-radius:30px;
+  padding:10px 24px;
+}
+.btn-main:hover{background:var(--accent);}
+
+/* CARDS */
+.card{
+  border:none;
+  border-radius:18px;
+  transition:.3s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 15px 40px rgba(0,0,0,.12);
+}
+
+/* DESTINATION */
+.destination{
+  background:#eef4ff;
+  padding:20px;
+  border-radius:16px;
+  text-align:center;
+  font-weight:600;
+}
+
+/* FADE */
+.fade-up{
+  animation:fadeUp .6s ease;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(25px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container">
+  <a class="navbar-brand" href="index.html">GlobeTrotter</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/create%20trip%20.html">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/my%20trip%20.html">My Trips</a></li>
+    <li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/create%20trip%20.html">Create Trip</a></li>
+	<li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/Itinerary%20Builder.html#">Itinerary Builder </a></li>
+  </ul>
+  </ul>
+</div>
+</nav>
+
+<div class="container mt-4">
+
+<!-- WELCOME + HERO -->
+<div class="hero fade-up mb-4">
+  <div class="hero-content">
+    <h2 class="fw-bold">Welcome back, Explorer 👋</h2>
+    <p class="mb-4">Where do you want to go next?</p>
+
+    <!-- SEARCH -->
+    <div class="search-box mb-3">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Search cities, trips, destinations">
+    </div>
+
+    <a href="create-trip.html" class="btn btn-main">
+      <i class="bi bi-plus-circle"></i> Plan New Trip
+    </a>
+  </div>
+</div>
+
+<!-- RECOMMENDED DESTINATIONS -->
+<div class="fade-up mb-3">
+  <h4 class="fw-bold">Recommended Destinations</h4>
+</div>
+
+<div class="row g-3 fade-up mb-4">
+  <div class="col-md-3"><div class="destination">Tokyo 🇯🇵</div></div>
+  <div class="col-md-3"><div class="destination">Paris 🇫🇷</div></div>
+  <div class="col-md-3"><div class="destination">Dubai 🇦🇪</div></div>
+  <div class="col-md-3"><div class="destination">Bali 🇮🇩</div></div>
+</div>
+
+<!-- RECENT TRIPS -->
+<div class="fade-up mb-3">
+  <h4 class="fw-bold">Recent Trips</h4>
+</div>
+
+<div class="row g-4 fade-up mb-4">
+  <div class="col-md-4">
+    <div class="card p-4">
+      <h5>Europe Escape</h5>
+      <small>Paris • Rome • Zurich</small>
+      <p class="mt-2">12 Days · ₹1,20,000</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-4">
+      <h5>Beach Break</h5>
+      <small>Bali • Maldives</small>
+      <p class="mt-2">7 Days · ₹85,000</p>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET HIGHLIGHT -->
+<div class="fade-up mb-3">
+  <h4 class="fw-bold">Budget Overview</h4>
+</div>
+
+<div class="row g-4 fade-up">
+  <div class="col-md-4">
+    <div class="card p-4 text-center">
+      <h6>Total Budget</h6>
+      <h3 class="fw-bold text-primary">₹2,05,000</h3>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card p-4">
+      <canvas id="budgetChart"></canvas>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const ctx = document.getElementById('budgetChart');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Transport', 'Stay', 'Food', 'Activities'],
+    datasets: [{
+      data: [50000, 80000, 30000, 45000],
+      backgroundColor: '#1e88e5'
+    }]
+  },
+  options: {
+    plugins:{legend:{display:false}},
+    responsive:true
+  }
+  
+});
+</script>
+
+</body>
+</html>

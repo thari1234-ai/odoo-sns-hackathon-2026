@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter Ocean Intro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:Poppins,sans-serif;
+  background:#071a1d;
+  color:white;
+  overflow:hidden;
+}
+
+/* THEME TOGGLE */
+.toggle{
+  position:fixed;
+  top:30px;
+  right:40px;
+  z-index:20;
+  background:#0aa6a6;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+/* OCEAN */
+.ocean{
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.25)),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") center/cover no-repeat;
+  background-size:cover;
+  z-index:5;
+  clip-path: circle(100% at 50% 50%);
+  animation-fill-mode: forwards;
+}
+
+/* Ocean animations smooth */
+@keyframes oceanToHalf {
+  0% { clip-path: circle(100% at 50% 50%); }
+  100% { clip-path: circle(50% at 100% 50%); }
+}
+@keyframes oceanToFull {
+  0% { clip-path: circle(50% at 100% 50%); }
+  100% { clip-path: circle(100% at 50% 50%); }
+}
+
+/* HERO TEXT */
+.hero{
+  position:relative;
+  z-index:10;
+  height:100vh;
+  padding:120px 80px;
+  opacity:0;
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: none; 
+}
+.hero.show{
+  opacity:1;
+  pointer-events: auto;
+}
+
+h1{font-size:64px;font-weight:800;line-height:1.1;}
+h1 span{color:#0aa6a6;}
+p{margin-top:20px;font-size:18px;opacity:.85;transition: opacity 0.8s ease-in-out;}
+
+/* GO BUTTON */
+.go-btn{
+  margin-top:35px;
+  width:85px;
+  height:85px;
+  border-radius:50%;
+  border:none;
+  background:#0aa6a6;
+  color:white;
+  font-weight:600;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  cursor:pointer;
+  transition:.3s;
+}
+.go-btn:hover{transform:scale(1.1);}
+
+/* GLASS LOGIN */
+.login-section{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(7,26,29,0.5);
+  backdrop-filter:blur(10px);
+  opacity:0;
+  pointer-events:none;
+  z-index:15;
+  transition:opacity 0.8s ease-in-out;
+}
+.login-section.show{
+  opacity:1;
+  pointer-events:auto;
+}
+.container-login{
+  background:rgba(255,255,255,0.1);
+  padding:40px 30px;
+  border-radius:20px;
+  color:white;
+  text-align:center;
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.2);
+  width:360px;
+}
+.container-login h2{font-size:28px;margin-bottom:30px;}
+.input-group{margin-bottom:20px;text-align:left;}
+.input-group label{display:block;margin-bottom:6px;}
+.input-group input{
+  width:100%;padding:12px 15px;border-radius:12px;
+  border:none;font-size:16px;background:rgba(255,255,255,0.2);color:white;
+}
+.input-group input::placeholder{color:rgba(255,255,255,0.7);}
+.login-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#0aa6a6;color:white;font-weight:600;font-size:16px;cursor:pointer;}
+.login-btn:hover{transform:scale(1.03);}
+.forgot{display:block;text-align:right;font-size:13px;margin-bottom:20px;color:white;text-decoration:none;}
+.forgot:hover{color:#0aa6a6;}
+.footer{font-size:14px;}
+.footer a{color:#0aa6a6;text-decoration:none;font-weight:600;}
+.footer a:hover{text-decoration:underline;}
+
+/* Inline error message */
+.error-msg{
+  color:#ff4d4d;
+  font-size:14px;
+  margin-bottom:10px;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<button class="toggle" onclick="toggleTheme()">🌙</button>
+
+<!-- OCEAN -->
+<div class="ocean" id="ocean"></div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+<h1>FIND SOMEONE<br><span>TO TAKE YOU</span><br>THERE</h1>
+<p>Dream slowly. Travel deeply.<br>Design journeys that feel like cinema.</p>
+<button class="go-btn" id="goBtn">GO</button>
+</section>
+
+<!-- LOGIN -->
+<section class="login-section" id="loginSection">
+<div class="container-login">
+<h2>Login to GlobeTrotter</h2>
+
+<div class="error-msg" id="errorMsg">Error message</div>
+
+<div class="input-group">
+<label>Email</label>
+<input type="email" id="email" placeholder="Enter email">
+</div>
+<div class="input-group">
+<label>Password</label>
+<input type="password" id="password" placeholder="Enter password">
+</div>
+<a href="#" class="forgot">Forgot Password?</a>
+<button class="login-btn" id="loginBtn">Login</button>
+<div class="footer">Don't have an account? <a href="#">Sign Up</a></div>
+</div>
+</section>
+
+<script>
+function toggleTheme(){
+  const body=document.body;
+  body.dataset.theme = body.dataset.theme==="light" ? "dark":"light";
+}
+
+// Initial animation
+window.onload = ()=>{
+  const ocean = document.getElementById('ocean');
+  const hero = document.getElementById('hero');
+
+  ocean.style.animation = 'oceanToHalf 2.8s ease-in-out forwards';
+  hero.style.transition = 'opacity 2.8s ease-in-out';
+  hero.style.opacity = 1;
+  hero.classList.add('show');
+}
+
+// GO button: reverse ocean + show login
+document.getElementById('goBtn').addEventListener('click', ()=>{
+  const ocean = document.getElementById('ocean');
+  const hero = document.getElementById('hero');
+  const login = document.getElementById('loginSection');
+
+  hero.style.opacity = 0;
+  hero.classList.remove('show');
+
+  ocean.style.animation = 'oceanToFull 2.8s ease-in-out forwards';
+
+  setTimeout(()=>{
+    login.classList.add('show');
+  },2800);
+});
+
+// Login validation + redirect
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
+
+  // Clear previous error
+  errorMsg.style.display = "none";
+
+  // Email regex
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Password minimum 6 chars
+  if(!emailPattern.test(email)){
+    errorMsg.textContent = "Invalid email format!";
+    errorMsg.style.display = "block";
+    return;
+  }
+  if(password.length < 6){
+    errorMsg.textContent = "Password must be at least 6 characters!";
+    errorMsg.style.display = "block";
+    return;
+  }
+
+  // Demo credentials
+  const correctEmail = "user@example.com";
+  const correctPassword = "123456";
+
+  if(email === correctEmail && password === correctPassword){
+    alert("Login successful! Redirecting...");
+    window.location.href = "dashboard.html"; // replace with actual page
+  }else{
+    errorMsg.textContent = "Wrong email or password!";
+    errorMsg.style.display = "block";
+  }
+});
+</script>
+
+</body>
+</html>

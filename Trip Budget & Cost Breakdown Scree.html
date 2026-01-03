@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | Trip Budget</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Font & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --accent:#00bcd4;
+  --bg:#f4f7fb;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  margin-top:70px;
+}
+
+/* NAVBAR */
+.navbar{
+  background:white;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.navbar-brand{color:var(--primary)!important;font-weight:700;}
+.nav-link{color:#333;font-weight:500;}
+.nav-link:hover{color:var(--primary);}
+
+/* HEADER */
+.page-header{
+  background:linear-gradient(120deg,var(--primary),var(--accent));
+  color:white;
+  border-radius:25px;
+  padding:30px;
+  margin-bottom:20px;
+}
+
+/* CHART CONTAINER */
+.chart-container{
+  background:white;
+  border-radius:20px;
+  padding:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  margin-bottom:20px;
+  max-width:600px; /* compact width */
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.chart-container h5{
+  margin-bottom:15px;
+  text-align:center;
+}
+
+.alert-overbudget{
+  background:#ffebee;
+  color:#e53935;
+  padding:15px 20px;
+  border-radius:15px;
+  font-weight:600;
+  max-width:600px;
+  margin:auto;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container">
+  <a class="navbar-brand" href="index.html">GlobeTrotter</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="my-trips.html">My Trips</a></li>
+    <li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/Trip%20Calendar%20%20Timeline%20Screen.html">Calendar</a></li>
+
+  </ul>
+</div>
+</nav>
+
+<div class="container mt-4">
+
+<div class="page-header">
+  <h2 class="fw-bold">Trip Budget 💰</h2>
+  <p class="mb-0">Track costs and stay within budget</p>
+</div>
+
+<!-- TOTAL COST -->
+<div class="chart-container text-center mb-4">
+  <h4>Total Estimated Cost: ₹15,500</h4>
+  <h6>Average per Day: ₹5,167</h6>
+</div>
+
+<!-- PIE CHART -->
+<div class="chart-container mb-4">
+  <h5>Cost Breakdown</h5>
+  <canvas id="pieChart" height="250"></canvas>
+</div>
+
+<!-- BAR CHART -->
+<div class="chart-container mb-4">
+  <h5>Daily Expenses</h5>
+  <canvas id="barChart" height="250"></canvas>
+</div>
+
+<!-- OVERBUDGET ALERT -->
+<div id="alert" class="alert-overbudget d-none">
+  ⚠️ Day 2 exceeds your budget limit!
+</div>
+
+</div>
+
+<script>
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+const barCtx = document.getElementById('barChart').getContext('2d');
+
+// Sample budget data
+const costBreakdown = {
+  labels: ['Transport','Stay','Activities','Meals'],
+  data: [4000,6000,3000,2500],
+  colors: ['#1e88e5','#00bcd4','#ff9800','#8bc34a']
+};
+
+// Pie chart
+new Chart(pieCtx, {
+  type:'pie',
+  data:{
+    labels: costBreakdown.labels,
+    datasets:[{
+      data: costBreakdown.data,
+      backgroundColor: costBreakdown.colors
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{position:'bottom'}
+    }
+  }
+});
+
+// Daily cost data
+const dailyData = {
+  labels:['Day 1','Day 2','Day 3'],
+  data:[5000,6000,4500]
+};
+
+// Bar chart
+new Chart(barCtx,{
+  type:'bar',
+  data:{
+    labels: dailyData.labels,
+    datasets:[{
+      label:'Daily Expenses',
+      data: dailyData.data,
+      backgroundColor:'#1e88e5'
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{legend:{display:false}},
+    scales:{
+      y:{beginAtZero:true}
+    }
+  }
+});
+
+// Show alert if any day exceeds 5500
+dailyData.data.forEach((amt,index)=>{
+  if(amt>5500){
+    document.getElementById("alert").classList.remove("d-none");
+  }
+});
+</script>
+
+</body>
+</html>
