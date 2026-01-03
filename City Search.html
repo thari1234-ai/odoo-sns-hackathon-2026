@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | City Search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  font-family:'Poppins',sans-serif;
+  background:#f4f7fb;
+  margin-top:80px;
+}
+.navbar{
+  background:white;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.navbar-brand{
+  font-weight:700;
+  color:#1e88e5!important;
+}
+.page-header{
+  background:linear-gradient(120deg,#1e88e5,#00bcd4);
+  color:white;
+  border-radius:25px;
+  padding:35px;
+  margin-bottom:25px;
+}
+.city-card{
+  background:white;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  margin-bottom:20px;
+  transition:.3s;
+}
+.city-card:hover{
+  transform:translateY(-6px);
+}
+.city-img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:15px;
+  margin-bottom:12px;
+}
+.city-name{
+  font-weight:700;
+  font-size:1.2rem;
+}
+.meta{
+  font-size:.9rem;
+  color:#555;
+}
+.btn-add{
+  background:#1e88e5;
+  color:white;
+  border-radius:25px;
+  padding:6px 14px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar fixed-top">
+  <div class="container">
+    <span class="navbar-brand">GlobeTrotter</span>
+	 <li class="nav-item"><a class="nav-link active" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/Activity%20Search.html">Acitivity Search</a></li>
+	
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h2 class="fw-bold">City Search</h2>
+    <p class="mb-0">Discover & add cities to your trip</p>
+  </div>
+
+  <!-- SEARCH & FILTER -->
+  <div class="row mb-3">
+    <div class="col-md-6 mb-2">
+      <input id="searchInput" class="form-control" placeholder="Search city">
+    </div>
+    <div class="col-md-4 mb-2">
+      <select id="countryFilter" class="form-select">
+        <option value="">All Countries</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CITY LIST -->
+  <div id="cityList" class="row"></div>
+
+</div>
+
+<script>
+/* ---------- SUPABASE SETUP ---------- */
+const SUPABASE_URL = "https://wnhpwvkwyzgwjkspcsdc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduaHB3dmt3eXpnd2prc3Bjc2RjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0MTE5OTQsImV4cCI6MjA4Mjk4Nzk5NH0.ElGIkb4NNftHl25T5-_NwQPWgS0JYcaNaT1Yqnc7Nps";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let cities = [];
+
+/* ---------- LOAD CITIES ---------- */
+async function loadCities(){
+  const { data, error } = await supabaseClient
+    .from("city_search")
+    .select("*");
+
+  if(error){
+    alert("Supabase error");
+    console.error(error);
+    return;
+  }
+
+  cities = data;
+  populateCountries();
+  renderCities();
+}
+
+/* ---------- COUNTRY FILTER ---------- */
+function populateCountries(){
+  const select = document.getElementById("countryFilter");
+  select.innerHTML = '<option value="">All Countries</option>';
+
+  const countries = [...new Set(cities.map(c => c.country).filter(Boolean))];
+  countries.forEach(country => {
+    const opt = document.createElement("option");
+    opt.value = country;
+    opt.textContent = country;
+    select.appendChild(opt);
+  });
+}
+
+/* ---------- RENDER CITIES ---------- */
+function renderCities(){
+  const list = document.getElementById("cityList");
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const country = document.getElementById("countryFilter").value;
+
+  list.innerHTML = "";
+
+  const filtered = cities.filter(c => {
+    return (
+      (c.city_name || "").toLowerCase().includes(search) &&
+      (country === "" || c.country === country)
+    );
+  });
+
+  if(filtered.length === 0){
+    list.innerHTML = `<p class="text-center text-muted">No cities found</p>`;
+    return;
+  }
+
+  filtered.forEach(c => {
+    list.innerHTML += `
+      <div class="col-md-4">
+        <div class="city-card">
+
+          <!-- IMAGE USING GOOGLE URL -->
+          <img 
+            src="https://t4.ftcdn.net/jpg/02/96/15/35/360_F_296153501_B34baBHDkFXbl5RmzxpiOumF4LHGCvAE.jpg"
+            class="city-img"
+          >
+
+          <div class="city-name">${c.city_name}</div>
+          <div class="meta">Country: ${c.country}</div>
+          <div class="meta">Cost Index: ${c.cost_index ?? 'N/A'}/10</div>
+          <div class="meta">Popularity: ${c.popularity ?? 'N/A'}/100</div>
+
+          <button class="btn btn-add mt-2"
+            onclick="addToTrip('${c.city_name}')">
+            Add to Trip
+          </button>
+
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* ---------- ADD TO TRIP ---------- */
+function addToTrip(city){
+  alert(city + " added to your trip!");
+}
+
+/* ---------- EVENTS ---------- */
+document.getElementById("searchInput").addEventListener("input", renderCities);
+document.getElementById("countryFilter").addEventListener("change", renderCities);
+
+/* ---------- INIT ---------- */
+loadCities();
+</script>
+
+</body>
+</html>

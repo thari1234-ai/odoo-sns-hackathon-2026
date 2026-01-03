@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | Activity Search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --accent:#00bcd4;
+  --bg:#f4f7fb;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  margin-top:70px;
+}
+
+/* NAVBAR */
+.navbar{
+  background:white;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.navbar-brand{color:var(--primary)!important;font-weight:700;}
+.nav-link{color:#333;font-weight:500;}
+.nav-link:hover{color:var(--primary);}
+
+/* HEADER */
+.page-header{
+  background:linear-gradient(120deg,var(--primary),var(--accent));
+  color:white;
+  border-radius:25px;
+  padding:40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* FILTERS */
+.filter-bar{
+  margin-bottom:20px;
+}
+.filter-bar select{
+  border-radius:25px;
+  padding:10px 20px;
+}
+
+/* ACTIVITY CARD */
+.activity-card{
+  background:white;
+  border-radius:20px;
+  padding:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  margin-bottom:15px;
+  transition:.3s;
+}
+.activity-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 15px 35px rgba(0,0,0,.12);
+}
+.activity-card img{
+  width:100%;
+  border-radius:15px;
+  height:140px;
+  object-fit:cover;
+}
+.activity-title{
+  font-weight:700;
+  margin-top:10px;
+}
+.activity-desc{
+  font-size:0.9rem;
+  color:#555;
+  margin:5px 0;
+}
+.btn-activity{
+  border-radius:25px;
+  font-weight:600;
+  padding:6px 12px;
+}
+.btn-add{background:var(--primary); color:white;}
+.btn-add:hover{background:var(--accent);}
+.btn-remove{background:#ffebee; color:#e53935;}
+.btn-remove:hover{opacity:.85;}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container">
+  <a class="navbar-brand" href="index.html">GlobeTrotter</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="my-trips.html">My Trips</a></li>
+    <li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/Trip%20Budget%20&%20Cost%20Breakdown%20Scree.html">Trip budge</a></li>
+    <li class="nav-item"><a class="nav-link active" href="#">Activity Search</a></li>
+  </ul>
+</div>
+</nav>
+
+<div class="container mt-4">
+
+<div class="page-header mb-4">
+  <h2 class="fw-bold">Activity Search 🎯</h2>
+  <p class="mb-0">Find activities for your trip</p>
+</div>
+
+<!-- FILTERS -->
+<div class="row filter-bar">
+  <div class="col-md-4 mb-2">
+    <select id="typeFilter" class="form-select">
+      <option value="">All Types</option>
+      <option value="Sightseeing">Sightseeing</option>
+      <option value="Food">Food</option>
+      <option value="Adventure">Adventure</option>
+    </select>
+  </div>
+  <div class="col-md-4 mb-2">
+    <select id="costFilter" class="form-select">
+      <option value="">All Costs</option>
+      <option value="low">Low (&lt;1000)</option>
+      <option value="medium">Medium (1000-3000)</option>
+      <option value="high">High (&gt;3000)</option>
+    </select>
+  </div>
+  <div class="col-md-4 mb-2">
+    <select id="durationFilter" class="form-select">
+      <option value="">All Durations</option>
+      <option value="short">&lt; 2 hrs</option>
+      <option value="medium">2-4 hrs</option>
+      <option value="long">&gt; 4 hrs</option>
+    </select>
+  </div>
+</div>
+
+<!-- ACTIVITY LIST -->
+<div id="activityList" class="row"></div>
+
+</div>
+
+<script>
+const activities = [
+  {name:"Eiffel Tower Tour", type:"Sightseeing", cost:2500, duration:"medium", desc:"Climb the tower and enjoy Paris view.", img:"https://source.unsplash.com/300x200/?eiffel"},
+  {name:"Louvre Museum Visit", type:"Sightseeing", cost:1800, duration:"medium", desc:"Explore the art masterpieces.", img:"https://source.unsplash.com/300x200/?museum"},
+  {name:"French Cooking Class", type:"Food", cost:2000, duration:"long", desc:"Learn to cook French cuisine.", img:"https://source.unsplash.com/300x200/?food"},
+  {name:"Seine River Cruise", type:"Sightseeing", cost:1200, duration:"short", desc:"Relaxing cruise along Seine.", img:"https://source.unsplash.com/300x200/?river"},
+  {name:"Hot Air Balloon Ride", type:"Adventure", cost:5000, duration:"long", desc:"Experience adventure above the city.", img:"https://source.unsplash.com/300x200/?balloon"},
+];
+
+function renderActivities(){
+  const list = document.getElementById("activityList");
+  const typeVal = document.getElementById("typeFilter").value;
+  const costVal = document.getElementById("costFilter").value;
+  const durVal = document.getElementById("durationFilter").value;
+
+  list.innerHTML="";
+
+  activities.filter(act=>{
+    let match=true;
+
+    if(typeVal && act.type!==typeVal) match=false;
+    if(costVal){
+      if(costVal==="low" && act.cost>=1000) match=false;
+      if(costVal==="medium" && (act.cost<1000 || act.cost>3000)) match=false;
+      if(costVal==="high" && act.cost<=3000) match=false;
+    }
+    if(durVal){
+      if(durVal==="short" && act.duration!=="short") match=false;
+      if(durVal==="medium" && act.duration!=="medium") match=false;
+      if(durVal==="long" && act.duration!=="long") match=false;
+    }
+
+    return match;
+  }).forEach(act=>{
+    const col=document.createElement("div");
+    col.className="col-md-4";
+
+    col.innerHTML=`
+      <div class="activity-card">
+        <img src="${act.img}" alt="${act.name}">
+        <div class="activity-title">${act.name}</div>
+        <div class="activity-desc">${act.desc}</div>
+        <div class="d-flex justify-content-between mt-2">
+          <div class="text-success">₹${act.cost}</div>
+          <button class="btn btn-activity btn-add" onclick="addActivity('${act.name}')">Add</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(col);
+  });
+}
+
+function addActivity(name){
+  alert(name+" added to your itinerary!");
+}
+
+document.getElementById("typeFilter").addEventListener("change", renderActivities);
+document.getElementById("costFilter").addEventListener("change", renderActivities);
+document.getElementById("durationFilter").addEventListener("change", renderActivities);
+
+renderActivities();
+</script>
+
+</body>
+</html>
