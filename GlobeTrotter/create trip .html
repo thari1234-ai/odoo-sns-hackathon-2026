@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | Create Trip</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --accent:#00bcd4;
+  --bg:#f4f7fb;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  margin-top:70px;
+}
+
+/* NAVBAR */
+.navbar{
+  background:white;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.navbar-brand{color:var(--primary)!important;font-weight:700;}
+.nav-link{color:#333;font-weight:500;}
+.nav-link:hover{color:var(--primary);}
+
+/* HEADER */
+.page-header{
+  background:linear-gradient(120deg,var(--primary),var(--accent));
+  color:white;
+  border-radius:25px;
+  padding:40px;
+}
+
+/* FORM CARD */
+.form-card{
+  background:white;
+  border-radius:22px;
+  padding:35px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.form-control{
+  border-radius:12px;
+  padding:12px;
+  font-weight:500;
+}
+.form-control:focus{
+  border-color:var(--primary);
+  box-shadow:none;
+}
+
+/* BUTTON */
+.btn-main{
+  background:var(--primary);
+  color:white;
+  border-radius:30px;
+  padding:12px 30px;
+  font-weight:600;
+}
+.btn-main:hover{background:var(--accent);}
+
+/* ERROR */
+.is-invalid{
+  border:2px solid #e53935 !important;
+  animation:shake .3s;
+}
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-4px)}
+  100%{transform:translateX(0)}
+}
+
+/* SUCCESS TOAST */
+.success-toast{
+  position:fixed;
+  top:90px;
+  right:30px;
+  background:linear-gradient(120deg,#00c853,#2e7d32);
+  color:white;
+  padding:15px 25px;
+  border-radius:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+  font-weight:600;
+  opacity:0;
+  transform:translateY(-20px);
+  transition:.4s;
+  z-index:999;
+}
+.success-toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* FADE */
+.fade-up{
+  animation:fadeUp .6s ease;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(25px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container">
+  <a class="navbar-brand" href="index.html">GlobeTrotter</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="my-trips.html">My Trips</a></li>
+    <li class="nav-item"><a class="nav-link active" href="#">Create Trip</a></li>
+  </ul>
+</div>
+</nav>
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+<div class="page-header fade-up mb-4">
+  <h2 class="fw-bold">Create a New Trip ✈️</h2>
+  <p class="mb-0">Plan your journey step by step</p>
+</div>
+
+<!-- FORM -->
+<div class="form-card fade-up">
+  <form id="tripForm">
+
+    <div class="mb-3">
+      <label class="form-label">Trip Name</label>
+      <input type="text" class="form-control" placeholder="Europe Summer Trip">
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Trip Description</label>
+      <textarea class="form-control" rows="4" placeholder="Describe your trip..."></textarea>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Cover Photo (Optional)</label>
+      <input type="file" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-main">
+      <i class="bi bi-check-circle"></i> Save Trip
+    </button>
+
+  </form>
+</div>
+</div>
+
+<!-- SUCCESS TOAST -->
+<div id="toast" class="success-toast">
+  🎉 Trip Created Successfully!
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const form = document.getElementById("tripForm");
+const toast = document.getElementById("toast");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+  let valid = true;
+
+  const inputs = form.querySelectorAll("input, textarea");
+  inputs.forEach(input=>{
+    input.classList.remove("is-invalid");
+    if(input.type !== "file" && input.value.trim()===""){
+      input.classList.add("is-invalid");
+      valid=false;
+    }
+  });
+
+  const dates = form.querySelectorAll("input[type='date']");
+  if(dates[0].value && dates[1].value && dates[1].value < dates[0].value){
+    dates[0].classList.add("is-invalid");
+    dates[1].classList.add("is-invalid");
+    valid=false;
+  }
+
+  if(valid){
+    toast.classList.add("show");
+    setTimeout(()=>{
+      toast.classList.remove("show");
+      form.reset();
+      // window.location.href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/dashboard.html";
+    },2000);
+  }
+});
+</script>
+
+</body>
+</html>
