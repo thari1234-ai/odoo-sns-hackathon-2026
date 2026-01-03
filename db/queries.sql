@@ -1,13 +1,50 @@
-INSERT INTO users VALUES (1, 'Demo User', 'demo@mail.com');
+-- ================================
+-- GlobeTrotter Sample Queries
+-- ================================
 
-INSERT INTO trips VALUES
-(1, 1, 'Europe Trip', '2026-01-10', '2026-01-20');
+-- 1️⃣ Get all trips for a user
+SELECT t.trip_id, t.name, t.start_date, t.end_date
+FROM trips t
+WHERE t.user_id = 'a352054d-1f66-4516-a6cb-d15d466ea996';
 
-INSERT INTO trip_stops VALUES
-(1, 1, 'Paris', 'France', '2026-01-10', '2026-01-13'),
-(2, 1, 'Rome', 'Italy', '2026-01-14', '2026-01-17');
+-- 2️⃣ Get stops (cities) for a trip
+SELECT city_name, country, start_date, end_date
+FROM stops
+WHERE trip_id = 11
+ORDER BY order_index;
 
-INSERT INTO budgets VALUES
-(1, 1, 500, 800, 300, 200);
+-- 3️⃣ Get activities for a stop
+SELECT name, category, cost, duration
+FROM activities
+WHERE stop_id = 27;
 
-SELECT city, country FROM trip_stops WHERE trip_id = 1;
+-- 4️⃣ Full itinerary for a trip
+SELECT 
+    t.name AS trip_name,
+    s.city_name,
+    a.name AS activity_name,
+    a.category,
+    a.cost
+FROM trips t
+JOIN stops s ON t.trip_id = s.trip_id
+LEFT JOIN activities a ON s.stop_id = a.stop_id
+WHERE t.trip_id = 11
+ORDER BY s.order_index;
+
+-- 5️⃣ Trip budget breakdown
+SELECT 
+    transport_cost,
+    stay_cost,
+    activity_cost,
+    meals_cost,
+    (transport_cost + stay_cost + activity_cost + meals_cost) AS total_cost
+FROM trip_budget
+WHERE trip_id = 11;
+
+-- 6️⃣ Public trips
+SELECT 
+    t.name,
+    s.public_url
+FROM shared_trips s
+JOIN trips t ON s.trip_id = t.trip_id
+WHERE s.is_public = TRUE;
