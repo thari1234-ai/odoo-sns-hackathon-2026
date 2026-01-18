@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GlobeTrotter | Itinerary Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --accent:#00bcd4;
+  --bg:#f4f7fb;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  margin-top:70px;
+}
+
+/* NAVBAR */
+.navbar{
+  background:white;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.navbar-brand{color:var(--primary)!important;font-weight:700;}
+.nav-link{color:#333;font-weight:500;}
+.nav-link:hover{color:var(--primary);}
+
+/* HEADER */
+.page-header{
+  background:linear-gradient(120deg,var(--primary),var(--accent));
+  color:white;
+  border-radius:25px;
+  padding:40px;
+}
+
+/* STOP CARD */
+.stop-card{
+  background:white;
+  border-radius:22px;
+  padding:25px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  margin-bottom:20px;
+  animation:fadeUp .5s ease;
+}
+
+.stop-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stop-title{
+  font-weight:700;
+  font-size:1.1rem;
+}
+
+.activity{
+  background:#f1f6ff;
+  border-radius:12px;
+  padding:10px 15px;
+  margin-bottom:8px;
+  font-weight:500;
+}
+
+.btn-main{
+  background:var(--primary);
+  color:white;
+  border-radius:30px;
+  padding:10px 22px;
+  font-weight:600;
+}
+.btn-main:hover{background:var(--accent);}
+
+.btn-icon{
+  border:none;
+  background:transparent;
+  font-size:1.2rem;
+  color:#555;
+}
+.btn-icon:hover{color:var(--primary);}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(25px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container">
+  <a class="navbar-brand" href="index.html">GlobeTrotter</a>
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item"><a class="nav-link" href="index.html">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/my%20trip%20.html">My Trips</a></li>
+    <li class="nav-item"><a class="nav-link active" href="file:///C:/Users/Rithika/OneDrive/Desktop/GlobeTrotter/itinerary-view.html">Itinerary view</a></li>
+  </ul>
+</div>
+</nav>
+
+<div class="container mt-4">
+
+<!-- HEADER -->
+<div class="page-header mb-4">
+  <h2 class="fw-bold">Itinerary Builder 🗺️</h2>
+  <p class="mb-0">Add cities, dates, and activities</p>
+</div>
+
+<button class="btn btn-main mb-4" onclick="addStop()">
+  <i class="bi bi-plus-circle"></i> Add Stop
+</button>
+
+<div id="stops"></div>
+
+</div>
+
+<script>
+let stopCount = 0;
+
+function addStop(){
+  stopCount++;
+
+  const stop = document.createElement("div");
+  stop.className = "stop-card";
+
+  stop.innerHTML = `
+    <div class="stop-header mb-3">
+      <div class="stop-title">Stop ${stopCount}</div>
+      <div>
+        <button class="btn-icon" onclick="moveUp(this)"><i class="bi bi-arrow-up"></i></button>
+        <button class="btn-icon" onclick="moveDown(this)"><i class="bi bi-arrow-down"></i></button>
+        <button class="btn-icon text-danger" onclick="this.closest('.stop-card').remove()">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="City name">
+      </div>
+      <div class="col-md-4">
+        <input type="date" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <input type="date" class="form-control">
+      </div>
+    </div>
+
+    <!-- ACTIVITY INPUT -->
+    <div class="input-group mb-2">
+      <input type="text" class="form-control activity-input" placeholder="Add activity (e.g. Eiffel Tower visit)">
+      <button class="btn btn-outline-primary" onclick="addActivity(this)">Add</button>
+    </div>
+
+    <div class="activities"></div>
+  `;
+
+  document.getElementById("stops").appendChild(stop);
+}
+
+function addActivity(btn){
+  const input = btn.previousElementSibling;
+  const text = input.value.trim();
+
+  if(text !== ""){
+    const activity = document.createElement("div");
+    activity.className = "activity";
+    activity.innerHTML = `
+      ${text}
+      <span class="float-end text-danger" style="cursor:pointer"
+        onclick="this.parentElement.remove()">✕</span>
+    `;
+    btn.parentElement.nextElementSibling.appendChild(activity);
+    input.value = "";
+  }
+}
+
+function moveUp(btn){
+  const card = btn.closest(".stop-card");
+  if(card.previousElementSibling){
+    card.parentNode.insertBefore(card, card.previousElementSibling);
+  }
+}
+
+function moveDown(btn){
+  const card = btn.closest(".stop-card");
+  if(card.nextElementSibling){
+    card.parentNode.insertBefore(card.nextElementSibling, card);
+  }
+}
+</script>
+
+</body>
+</html>
